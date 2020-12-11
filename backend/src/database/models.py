@@ -7,6 +7,8 @@ database_path = f"postgres://postgres@localhost:5432/{database_name}"
 
 db = SQLAlchemy()
 
+# -----------------------------------------------------------------------------------------------------------
+
 
 def setup_db(app, database_path=database_path):
     ''' Binds a flask application and a SQLAlchemy service. '''
@@ -19,6 +21,8 @@ def setup_db(app, database_path=database_path):
     # Commented out as will be using flask migrate to sync the db models
     # The commnad "flask db migrate" in cmd replaces this db.create_all()
     # db.create_all()
+
+# -----------------------------------------------------------------------------------------------------------
 
 
 class Gnss(db.Model):
@@ -60,6 +64,8 @@ class Gnss(db.Model):
             'num_frequencies': self.num_frequencies
         }
 
+# -----------------------------------------------------------------------------------------------------------
+
 
 class Signal(db.Model):
     '''A model for holding a GNSS signal entry.'''
@@ -91,3 +97,5 @@ class Signal(db.Model):
             'signal': self.signal,
             'gnss_id': self.gnss_id,
         }
+
+# -----------------------------------------------------------------------------------------------------------
