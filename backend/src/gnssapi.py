@@ -1,237 +1,409 @@
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, render_template, redirect, url_for, session
 import json
 from flask_cors import CORS
 
-from .database.models import setup_db, Gnss, Signal
-from .auth.auth import AuthError, requires_auth
+# TODO: .database.models doesn't work with test, database.models does
+from database.models import setup_db, Gnss, Signal
+from auth.auth import AuthError, requires_auth
 
-app = Flask(__name__)
-setup_db(app)
-CORS(app)
+from six.moves.urllib.parse import urlencode
 
-# ROUTES
+import sys
 
-# -----------------------------------------------------------------------------------------------------------
 
+def create_app(test_config=None):
 
-@app.route('/')
-# Does not need @requires_auth decoartor as it is a public endpoint
-def get_gnss():
-    '''Gets a GNSS TBD.'''
+    app = Flask(__name__)
+    app.secret_key = 'geomatics'
+    setup_db(app)
+    CORS(app)
 
-    # TODO:
-    # if request.method != 'GET':
-    #     abort(405)
+    CLIENT_ID = 'nHZZYK1rvE5AHo5twcLgvushH9vbxiA0'
+    AUTH0_BASE_URL = 'https://cbhuber.us.auth0.com'
+    IDENTIFIER = 'gnss'
 
-    all_gnss_from_db = Gnss.query.all()
+    # -----------------------------------------------------------------------------------------------------------
 
-    # TODO:
-    # if len(all_drinks_from_db) == 0:
-    #     abort(404)
+    @app.after_request
+    # After a request is received, run this after_request method
+    def after_request(response):
 
-    result = {}
-    result['success'] = True
-    result['gnss'] = [gnss.format() for gnss in all_gnss_from_db]
+        response.headers.add('Access-Control-Allow-Headers',
+                             'Content-Type, Authorization')
+        response.headers.add('Access-Control-Allow-Methods',
+                             'GET, POST, PATCH, DELETE, OPTIONS')
 
-    return jsonify(result)
+        return response
 
-# -----------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------
 
+    @app.route('/')
+    # Does not need @requires_auth decoartor as it is a public endpoint
+    def index():
+        '''Returns the main index page.'''
 
-@app.route('/gnss-signals')
-# @requires_auth('TBD')
-# def get_gnss_signals(payload):
-def get_gnss_signals():
-    '''Gets GNSS signals TBD.'''
+        if request.method != 'GET':
+            abort(405)
 
-    # TODO:
-    # if request.method != 'GET':
-    #     abort(405)
+        return render_template('index.html')
 
-    all_gnss_signals_from_db = Signal.query.all()
+    # -----------------------------------------------------------------------------------------------------------
 
-    # TODO:
-    # if len(all_drinks_from_db) == 0:
-    #     abort(404)
+    @app.route('/login')
+    # Does not need @requires_auth decoartor as it is a public endpoint
+    def login():
+        '''Route for the log in page.'''
 
-    result = {}
-    result['success'] = True
-    result['signal'] = [signal.format() for signal in all_gnss_signals_from_db]
+        if request.method != 'GET':
+            abort(405)
 
-    return jsonify(result)
+        return redirect(f'{AUTH0_BASE_URL}/authorize?audience={IDENTIFIER}&response_type=token&client_id={CLIENT_ID}&redirect_uri=' + url_for('loggedin', _external=True))
 
-# -----------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------
 
+    @app.route('/logout')
+    # Does not need @requires_auth decoartor as it is a public endpoint
+    def logout():
+        '''Route for the log out page.'''
 
-@app.route('/gnss', methods=['POST'])
-# @requires_auth('TBD')
-# def create_gnss(payload):
-def create_gnss():
-    '''Creates a new GNSS TBD.'''
+        if request.method != 'GET':
+            abort(405)
 
-    # TODO: Error handling
+        # Clear session stored data
+        session.clear()
 
-    gnss_data = request.get_json()
+        # Redirect user to logout endpoint
+        params = {'returnTo': url_for(
+            'loggedout', _external=True), 'client_id': f'{CLIENT_ID}'}
 
-    print(gnss_data)
+        return redirect(AUTH0_BASE_URL + '/v2/logout?' + urlencode(params))
 
-    new_gnss = Gnss(**gnss_data)
+    # -----------------------------------------------------------------------------------------------------------
 
-    # TODO: Add to db and error handling
+    @app.route('/loggedin')
+    # Does not need @requires_auth decoartor as it is a public endpoint
+    def loggedin():
+        '''Page to redirect to after logging in.'''
 
-    print(new_gnss.format())
+        if request.method != 'GET':
+            abort(405)
 
-    return jsonify({'success': True, 'gnss': [new_gnss.format()]})
+        return render_template('loggedin.html')
 
-# -----------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------
 
+    @app.route('/loggedout')
+    # Does not need @requires_auth decoartor as it is a public endpoint
+    def loggedout():
+        '''Page to redirect to after logging out.'''
 
-@app.route('/gnss-signals', methods=['POST'])
-# @requires_auth('TBD')
-# def create_gnss_signal(payload):
-def create_gnss_signal():
-    '''Creates a new GNSS signal TBD.'''
+        if request.method != 'GET':
+            abort(405)
 
-    # TODO: Error handling
+        return render_template('loggedout.html')
 
-    gnss_signal_data = request.get_json()
+    # -----------------------------------------------------------------------------------------------------------
 
-    print(gnss_signal_data)
+    @app.route('/gnss')
+    # Does not need @requires_auth decoartor as it is a public endpoint
+    def get_gnss():
+        '''Gets a GNSS API.'''
 
-    new_gnss_signal = Signal(**gnss_signal_data)
+        if request.method != 'GET':
+            abort(405)
 
-    # TODO: Add to db and error handling
+        all_gnss_from_db = Gnss.query.all()
 
-    print(new_gnss_signal.format())
+        if len(all_gnss_from_db) == 0:
+            abort(404)
 
-    return jsonify({'success': True, 'signal': [new_gnss_signal.format()]})
+        result = {}
+        result['success'] = True
+        result['gnss'] = [gnss.format() for gnss in all_gnss_from_db]
 
-# -----------------------------------------------------------------------------------------------------------
+        return jsonify(result)
 
+    # -----------------------------------------------------------------------------------------------------------
 
-@app.route('/gnss/<int:gnss_id>', methods=['PATCH'])
-# @requires_auth('TBD')
-# def update_gnss(payload, gnss_id):
-def update_gnss(gnss_id):
-    '''Updates an existing GNSS TBD.'''
+    @app.route('/gnss-signals')
+    # @requires_auth('TBD')
+    # def get_gnss_signals(payload):
+    def get_gnss_signals():
+        '''Gets GNSS signals API.'''
 
-    # TODO: Error handling
+        if request.method != 'GET':
+            abort(405)
 
-    gnss_from_db = Gnss.query.get(gnss_id)
+        all_gnss_signals_from_db = Signal.query.all()
 
-    gnss_data = request.get_json()
-    print(gnss_data)
+        if len(all_gnss_signals_from_db) == 0:
+            abort(404)
 
-    if 'name' in gnss_data:
-        gnss_from_db.name = gnss_data['name']
+        result = {}
+        result['success'] = True
+        result['signal'] = [signal.format()
+                            for signal in all_gnss_signals_from_db]
 
-    if 'owner' in gnss_data:
-        gnss_from_db.owner = gnss_data['owner']
+        return jsonify(result)
 
-    if 'num_satellites' in gnss_data:
-        gnss_from_db.num_satellites = gnss_data['num_satellites']
+    # -----------------------------------------------------------------------------------------------------------
 
-    if 'num_frequencies' in gnss_data:
-        gnss_from_db.num_frequencies = gnss_data['num_frequencies']
+    @app.route('/gnss', methods=['POST'])
+    # @requires_auth('TBD')
+    # def create_gnss(payload):
+    def create_gnss():
+        '''Creates a new GNSS.'''
 
-    # TODO: Add to db and error handling
+        if request.method != 'POST':
+            abort(405)
 
-    print(gnss_from_db.format())
+        gnss_data = request.get_json()
 
-    return jsonify({'result': True, 'gnss': [gnss_from_db.format()]})
+        if not gnss_data:
+            abort(400)
 
-# -----------------------------------------------------------------------------------------------------------
+        error = False
 
+        try:
+            new_gnss = Gnss(**gnss_data)
+            new_gnss.insert()
 
-@app.route('/gnss-signals/<int:signal_id>', methods=['PATCH'])
-# @requires_auth('TBD')
-# def update_gnss_signal(payload, signal_id):
-def update_gnss_signal(signal_id):
-    '''Updates an existing GNSS signal TBD.'''
+        except:
+            error = True
+            new_gnss.cancel()
+            new_gnss.close()
+            print(sys.exc_info())
 
-    # TODO: Error handling
+        if error:
+            abort(422)
 
-    gnss_signal_from_db = Signal.query.get(signal_id)
+        else:
+            return jsonify({'success': True, 'gnss': [new_gnss.format()]})
 
-    signal_data = request.get_json()
-    print(signal_data)
+    # -----------------------------------------------------------------------------------------------------------
 
-    if 'signal' in signal_data:
-        gnss_signal_from_db.signal = signal_data['signal']
+    @app.route('/gnss-signals', methods=['POST'])
+    # @requires_auth('TBD')
+    # def create_gnss_signal(payload):
+    def create_gnss_signal():
+        '''Creates a new GNSS signal.'''
 
-    if 'gnss_id' in signal_data:
-        gnss_signal_from_db.gnss_id = signal_data['gnss_id']
+        if request.method != 'POST':
+            abort(405)
 
-    # TODO: Add to db and error handling
+        gnss_signal_data = request.get_json()
 
-    print(gnss_signal_from_db.format())
+        if not gnss_signal_data:
+            abort(400)
 
-    return jsonify({'result': True, 'signal': [gnss_signal_from_db.format()]})
+        error = False
 
-# -----------------------------------------------------------------------------------------------------------
+        try:
+            new_gnss_signal = Signal(**gnss_signal_data)
+            new_gnss_signal.insert()
 
+        except:
+            error = True
+            new_gnss_signal.cancel()
+            new_gnss_signal.close()
+            print(sys.exc_info())
 
-@app.route('/gnss/<int:gnss_id>', methods=['DELETE'])
-# @requires_auth('TBD')
-# def delete_gnss(payload, gnss_id):
-def delete_gnss(gnss_id):
-    '''Deletes an existing GNSS TBD.'''
+        if error:
+            abort(422)
 
-    gnss_to_delete = Gnss.query.get(gnss_id)
+        else:
+            return jsonify({'success': True, 'signal': [new_gnss_signal.format()]})
 
-    # TODO: Implement and error check
+    # -----------------------------------------------------------------------------------------------------------
 
-    return jsonify({'success': True, 'delete': gnss_id})
+    @app.route('/gnss/<int:gnss_id>', methods=['PATCH'])
+    # @requires_auth('TBD')
+    # def update_gnss(payload, gnss_id):
+    def update_gnss(gnss_id):
+        '''Updates an existing GNSS ID.'''
 
-# -----------------------------------------------------------------------------------------------------------
+        if request.method != 'PATCH':
+            abort(405)
 
+        gnss_from_db = Gnss.query.get(gnss_id)
 
-@app.route('/gnss-signals/<int:signal_id>', methods=['DELETE'])
-# @requires_auth('TBD')
-# def delete_gnss_signal(payload, signal_id):
-def delete_gnss_signal(signal_id):
-    '''Deletes an existing GNSS signal TBD.'''
+        if not gnss_from_db:
+            abort(404)
 
-    gnss_signal_to_delete = Signal.query.get(signal_id)
+        gnss_data = request.get_json()
 
-    # TODO: Implement and error check
+        if not gnss_data:
+            abort(400)
 
-    return jsonify({'success': True, 'delete': signal_id})
+        error = False
 
-# -----------------------------------------------------------------------------------------------------------
+        try:
 
-# TODO: Implement search method
+            if 'name' in gnss_data:
+                gnss_from_db.name = gnss_data['name']
 
-# -----------------------------------------------------------------------------------------------------------
+            if 'owner' in gnss_data:
+                gnss_from_db.owner = gnss_data['owner']
 
+            if 'num_satellites' in gnss_data:
+                gnss_from_db.num_satellites = gnss_data['num_satellites']
 
-@app.errorhandler(400)
-def bad_request(error):
-    return jsonify({'success': False, 'error': 400, 'message': 'Bad request'}), 400
+            if 'num_frequencies' in gnss_data:
+                gnss_from_db.num_frequencies = gnss_data['num_frequencies']
 
+        except:
+            error = True
+            gnss_from_db.cancel()
+            gnss_from_db.close()
+            print(sys.exc_info())
 
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify({'success': False, 'error': 404, 'message': 'Not found'}), 404
+        if error:
+            abort(422)
 
+        else:
+            return jsonify({'success': True, 'gnss': [gnss_from_db.format()]})
 
-@app.errorhandler(405)
-def method_not_allowed(error):
-    return jsonify({'success': False, 'error': 405, 'message': 'Method not allowed'}), 405
+    # -----------------------------------------------------------------------------------------------------------
 
+    @app.route('/gnss-signals/<int:signal_id>', methods=['PATCH'])
+    # @requires_auth('TBD')
+    # def update_gnss_signal(payload, signal_id):
+    def update_gnss_signal(signal_id):
+        '''Updates an existing GNSS signal ID.'''
 
-@app.errorhandler(422)
-def unprocessable(error):
-    return jsonify({'success': False, 'error': 422, 'message': 'Not processable'}), 422
+        if request.method != 'PATCH':
+            abort(405)
 
+        gnss_signal_from_db = Signal.query.get(signal_id)
 
-@app.errorhandler(500)
-def internal_server_error(error):
-    return jsonify({'success': False, 'error': 500, 'message': 'Internal server error'}), 500
+        if not gnss_signal_from_db:
+            abort(404)
 
+        signal_data = request.get_json()
 
-@app.errorhandler(AuthError)
-def auth_error(error):
-    return jsonify({'success': False, 'error': error.status_code, 'message': error.error['description']}), error.status_code
+        if not signal_data:
+            abort(400)
 
-# -----------------------------------------------------------------------------------------------------------
+        error = False
+
+        try:
+
+            if 'signal' in signal_data:
+                gnss_signal_from_db.signal = signal_data['signal']
+
+            if 'gnss_id' in signal_data:
+                gnss_signal_from_db.gnss_id = signal_data['gnss_id']
+
+        except:
+            error = True
+            gnss_from_db.cancel()
+            gnss_from_db.close()
+            print(sys.exc_info())
+
+        if error:
+            abort(422)
+
+        else:
+            return jsonify({'success': True, 'signal': [gnss_signal_from_db.format()]})
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    @app.route('/gnss/<int:gnss_id>', methods=['DELETE'])
+    # @requires_auth('TBD')
+    # def delete_gnss(payload, gnss_id):
+    def delete_gnss(gnss_id):
+        '''Deletes an existing GNSS ID.'''
+
+        if request.method != 'DELETE':
+            abort(405)
+
+        error = False
+
+        gnss_to_delete = Gnss.query.get(gnss_id)
+
+        if gnss_to_delete is not None:
+
+            try:
+                gnss_to_delete.delete()
+
+            except:
+                error = True
+                gnss_to_delete.cancel()
+                gnss_to_delete.close()
+                print(sys.exc_info())
+
+            if error:
+                abort(422)
+            else:
+                return jsonify({'success': True, 'delete': gnss_id})
+
+        else:
+            abort(404)
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    @app.route('/gnss-signals/<int:signal_id>', methods=['DELETE'])
+    # @requires_auth('TBD')
+    # def delete_gnss_signal(payload, signal_id):
+    def delete_gnss_signal(signal_id):
+        '''Deletes an existing GNSS signal TBD.'''
+
+        if request.method != 'DELETE':
+            abort(405)
+
+        error = False
+
+        gnss_signal_to_delete = Signal.query.get(signal_id)
+
+        if gnss_signal_to_delete is not None:
+
+            try:
+                gnss_signal_to_delete.delete()
+
+            except:
+                error = True
+                gnss_signal_to_delete.cancel()
+                gnss_signal_to_delete.close()
+                print(sys.exc_info())
+
+            if error:
+                abort(422)
+            else:
+                return jsonify({'success': True, 'delete': signal_id})
+
+        else:
+            abort(404)
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    # TODO: Implement search method
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({'success': False, 'error': 400, 'message': 'Bad request'}), 400
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({'success': False, 'error': 404, 'message': 'Not found'}), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({'success': False, 'error': 405, 'message': 'Method not allowed'}), 405
+
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({'success': False, 'error': 422, 'message': 'Not processable'}), 422
+
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return jsonify({'success': False, 'error': 500, 'message': 'Internal server error'}), 500
+
+    @app.errorhandler(AuthError)
+    def auth_error(error):
+        return jsonify({'success': False, 'error': error.status_code, 'message': error.error['description']}), error.status_code
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    return app
