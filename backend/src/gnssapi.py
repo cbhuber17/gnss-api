@@ -126,9 +126,8 @@ def create_app(test_config=None):
     # -----------------------------------------------------------------------------------------------------------
 
     @app.route('/gnss-signals')
-    # @requires_auth('TBD')
-    # def get_gnss_signals(payload):
-    def get_gnss_signals():
+    @requires_auth('get:signals')
+    def get_gnss_signals(payload):
         '''Gets GNSS signals API.'''
 
         if request.method != 'GET':
@@ -149,9 +148,8 @@ def create_app(test_config=None):
     # -----------------------------------------------------------------------------------------------------------
 
     @app.route('/gnss', methods=['POST'])
-    # @requires_auth('TBD')
-    # def create_gnss(payload):
-    def create_gnss():
+    @requires_auth('post:gnss')
+    def create_gnss(payload):
         '''Creates a new GNSS.'''
 
         if request.method != 'POST':
@@ -183,9 +181,8 @@ def create_app(test_config=None):
     # -----------------------------------------------------------------------------------------------------------
 
     @app.route('/gnss-signals', methods=['POST'])
-    # @requires_auth('TBD')
-    # def create_gnss_signal(payload):
-    def create_gnss_signal():
+    @requires_auth('post:signal')
+    def create_gnss_signal(payload):
         '''Creates a new GNSS signal.'''
 
         if request.method != 'POST':
@@ -217,9 +214,8 @@ def create_app(test_config=None):
     # -----------------------------------------------------------------------------------------------------------
 
     @app.route('/gnss/<int:gnss_id>', methods=['PATCH'])
-    # @requires_auth('TBD')
-    # def update_gnss(payload, gnss_id):
-    def update_gnss(gnss_id):
+    @requires_auth('patch:gnss')
+    def update_gnss(payload, gnss_id):
         '''Updates an existing GNSS ID.'''
 
         if request.method != 'PATCH':
@@ -266,9 +262,8 @@ def create_app(test_config=None):
     # -----------------------------------------------------------------------------------------------------------
 
     @app.route('/gnss-signals/<int:signal_id>', methods=['PATCH'])
-    # @requires_auth('TBD')
-    # def update_gnss_signal(payload, signal_id):
-    def update_gnss_signal(signal_id):
+    @requires_auth('patch:signal')
+    def update_gnss_signal(payload, signal_id):
         '''Updates an existing GNSS signal ID.'''
 
         if request.method != 'PATCH':
@@ -309,9 +304,8 @@ def create_app(test_config=None):
     # -----------------------------------------------------------------------------------------------------------
 
     @app.route('/gnss/<int:gnss_id>', methods=['DELETE'])
-    # @requires_auth('TBD')
-    # def delete_gnss(payload, gnss_id):
-    def delete_gnss(gnss_id):
+    @requires_auth('delete:gnss')
+    def delete_gnss(payload, gnss_id):
         '''Deletes an existing GNSS ID.'''
 
         if request.method != 'DELETE':
@@ -343,10 +337,9 @@ def create_app(test_config=None):
     # -----------------------------------------------------------------------------------------------------------
 
     @app.route('/gnss-signals/<int:signal_id>', methods=['DELETE'])
-    # @requires_auth('TBD')
-    # def delete_gnss_signal(payload, signal_id):
-    def delete_gnss_signal(signal_id):
-        '''Deletes an existing GNSS signal TBD.'''
+    @requires_auth('delete:signal')
+    def delete_gnss_signal(payload, signal_id):
+        '''Deletes an existing GNSS signal.'''
 
         if request.method != 'DELETE':
             abort(405)
