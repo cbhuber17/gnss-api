@@ -1,0 +1,67 @@
+/* Base styles */
+html {
+    font-family: Raleway;
+    color: #fafafa;
+}
+
+body {
+    background: linear-gradient(to bottom right, black, grey);
+    border: 2px solid white;
+    outline-offset: 0px;
+    height: 90vh;
+    position: relative;
+}
+
+h1 {
+    text-decoration: underline;
+    text-transform: uppercase;
+    text-shadow: 2px 2px black;
+}
+
+#form {
+    margin-bottom: 20px;
+}
+
+.centered {
+    background: linear-gradient(to bottom right, blueviolet, skyblue);
+    border: 2px solid skyblue;
+    width: 75vh;
+    text-align: center;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 3px 3px 3px;
+    padding-bottom: 20px;
+}
+
+button {
+    font-family: Raleway;
+    font-weight: bolder;
+    background-color: orange;
+    border: 2px solid white;
+    border-radius: 5px;
+    transition: 0.3s ease;
+    width: 200px;
+    height: 30px;
+    margin: 1em;
+}
+
+button:hover {
+    background-color: gold;
+    box-shadow: 3px 3px 5px silver;
+}
+
+a, a:visited, a:hover, a:active {
+    color: #fafafa;
+  }
+
+.jwt-container {
+    font-weight: bolder;
+    word-wrap: break-word;
+    margin: 0 auto;
+    width: 90%;
+    background-color: black;
+    border: 2px solid red;
+}
