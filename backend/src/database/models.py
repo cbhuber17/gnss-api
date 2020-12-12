@@ -22,6 +22,8 @@ def setup_db(app, database_path=database_path):
     # The commnad "flask db migrate" in cmd replaces this db.create_all()
     # db.create_all()
 
+    return db
+
 # -----------------------------------------------------------------------------------------------------------
 
 
@@ -72,7 +74,7 @@ class Signal(db.Model):
 
     id = Column(db.Integer, primary_key=True)
     signal = Column(db.String(16), nullable=False)
-    gnss_id = Column(db.Integer, db.ForeignKey('gnss.id'), nullable=False)
+    gnss_id = Column(db.Integer, db.ForeignKey('gnss.id'))
 
     def insert(self):
         db.session.add(self)
