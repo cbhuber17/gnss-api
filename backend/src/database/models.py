@@ -2,8 +2,13 @@ from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-database_name = "gnss"
-database_path = f"postgres://postgres@localhost:5432/{database_name}"
+dev = True
+
+if dev:
+    database_name = "gnss"
+    database_path = f"postgres://postgres@localhost:5432/{database_name}"
+else:
+    database_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
@@ -17,10 +22,14 @@ def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
-    migrate = Migrate(app, db)
-    # Commented out as will be using flask migrate to sync the db models
-    # The commnad "flask db migrate" in cmd replaces this db.create_all()
-    # db.create_all()
+
+    if dev:
+        migrate = Migrate(app, db)
+        # Commented out as will be using flask migrate to sync the db models
+        # The commnad "flask db migrate" in cmd replaces this db.create_all()
+        # db.create_all()
+    else:
+        db.create_all()
 
     return db
 

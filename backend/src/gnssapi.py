@@ -7,19 +7,27 @@ from backend.src.auth.auth import AuthError, requires_auth
 
 from six.moves.urllib.parse import urlencode
 
+import os
 import sys
 
 
 def create_app(test_config=None):
 
-    app = Flask(__name__)
-    app.secret_key = 'geomatics'
-    setup_db(app)
-    CORS(app)
-
     CLIENT_ID = 'nHZZYK1rvE5AHo5twcLgvushH9vbxiA0'
     AUTH0_BASE_URL = 'https://cbhuber.us.auth0.com'
     IDENTIFIER = 'gnss'
+
+    app = Flask(__name__)
+
+    dev = True
+
+    if dev:
+        app.secret_key = 'abcdef'
+    else:
+        app.secret_key = os.environ['APP_SECRET_KEY']
+
+    setup_db(app)
+    CORS(app)
 
     # -----------------------------------------------------------------------------------------------------------
 
