@@ -59,7 +59,7 @@ def get_token_auth_header():
 
 def check_permissions(permission, payload):
     ''' @INPUTS
-        permission: string permission (i.e. 'tbd:tbd')
+        permission: string permission (i.e. 'get:signal')
         payload: decoded jwt payload
 
         Raises an AuthError if permissions are not included in the payload.
@@ -162,7 +162,7 @@ def verify_decode_jwt(token):
 
 def requires_auth(permission=''):
     ''' @INPUTS
-        permission: string permission (i.e. 'tbd:tbd')
+        permission: string permission (i.e. 'get:signal')
 
         Uses the get_token_auth_header method to get the token.
         Uses the verify_decode_jwt method to decode the jwt.
