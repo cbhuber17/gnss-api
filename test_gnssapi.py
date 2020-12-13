@@ -2,8 +2,8 @@ import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
 
-from backend.src.gnssapi import create_app
-from backend.src.database.models import setup_db, Gnss, Signal
+from app import create_app
+from models import setup_db, Gnss, Signal
 
 
 class GnssTestCase(unittest.TestCase):
