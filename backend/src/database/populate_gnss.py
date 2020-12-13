@@ -1,0 +1,31 @@
+from models import db, setup_db, Gnss, Signal
+from flask import Flask
+
+app = Flask(__name__)
+
+setup_db(app)
+gnss1 = Gnss(name='GPS', owner='USA', num_satellites=32, num_frequencies=3)
+gnss2 = Gnss(name='Galileo', owner='EU', num_satellites=36, num_frequencies=4)
+db.session.add(gnss1)
+db.session.add(gnss2)
+db.session.commit()
+
+signal1 = Signal(signal='L1 C/A', gnss_id=1)
+signal2 = Signal(signal='L1C', gnss_id=1)
+signal3 = Signal(signal='L2 P(Y)', gnss_id=1)
+signal4 = Signal(signal='L2C', gnss_id=1)
+signal5 = Signal(signal='L5', gnss_id=1)
+signal6 = Signal(signal='E1', gnss_id=2)
+signal7 = Signal(signal='E5A', gnss_id=2)
+signal8 = Signal(signal='E5B', gnss_id=2)
+signal9 = Signal(signal='E5AltBOC', gnss_id=2)
+db.session.add(signal1)
+db.session.add(signal2)
+db.session.add(signal3)
+db.session.add(signal4)
+db.session.add(signal5)
+db.session.add(signal6)
+db.session.add(signal7)
+db.session.add(signal8)
+db.session.add(signal9)
+db.session.commit()
