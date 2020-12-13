@@ -53,7 +53,8 @@ class GnssTestCase(unittest.TestCase):
         self.director_bearer_token = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4MDE4NjcsImV4cCI6MTYwNzg4ODI2NywiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.eBUOWs7MowemhFsXk2Zz9oFHtdjJKTzz1GZ55osOrDpQflnvOEcF551nI0qCfyYLekLXddMdJdPGk6FmLeaahLRZbvdmKb6vENxpuUZbae9ftwSt7OnQniskAdwebyobIPFILjG1b_hIFzU9VWk9gnO2ZWRVpp0x__EAKay08ix0S8KL2ct_sA5lH6W6xg23y91PJyfEe5XnFxLUb5QVso663HdPt3o57i7teMYgM25oJkmIblnUACCc5o4cmJJKE8pQg5YQxOZah4Na16f_RNEu0OuVVU2toyg0WQrVJErI1unkJLtij81iJvmHxZIFIUDO2cS8v8602lQl3eTTRQ'
 
         self.client_auth_header = {'Authorization': self.client_bearer_token}
-        self.director_auth_header = {'Authorization': self.director_bearer_token}
+        self.director_auth_header = {
+            'Authorization': self.director_bearer_token}
 
         self.app = create_app()
         self.client = self.app.test_client
