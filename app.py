@@ -19,7 +19,7 @@ def create_app(test_config=None):
 
     app = Flask(__name__)
 
-    dev = True
+    dev = False
 
     if dev:
         app.secret_key = 'abcdef'
