@@ -2,9 +2,8 @@ from flask import Flask, request, jsonify, abort, render_template, redirect, url
 import json
 from flask_cors import CORS
 
-# TODO: .database.models doesn't work with test, database.models does
-from database.models import setup_db, Gnss, Signal
-from auth.auth import AuthError, requires_auth
+from backend.src.database.models import setup_db, Gnss, Signal
+from backend.src.auth.auth import AuthError, requires_auth
 
 from six.moves.urllib.parse import urlencode
 
