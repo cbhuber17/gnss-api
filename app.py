@@ -10,6 +10,8 @@ from six.moves.urllib.parse import urlencode
 import os
 import sys
 
+dev = False
+
 
 def create_app(test_config=None):
 
@@ -18,8 +20,6 @@ def create_app(test_config=None):
     IDENTIFIER = 'gnss'
 
     app = Flask(__name__)
-
-    dev = False
 
     if dev:
         app.secret_key = 'abcdef'
