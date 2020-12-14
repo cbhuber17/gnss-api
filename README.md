@@ -1,7 +1,5 @@
 # Full Stack Nanodegree Capstone Project - GNSS API
 
-**TBD/TODO: change all 127.0.0.1 to heroku URL**
-
 ## Table of Contents
 
 1. [Background Information](#background-info)
@@ -25,7 +23,7 @@ This project summarizes the concepts learned from the various courses in the Ful
 * Utilizing a database with models based on the [Postgres](https://www.postgresql.org/) client.  
     - The ```ORM``` used is python's ```SQLAlchemy``` (combined with ```Flask```) that contains ```CRUD``` operations.
 * Generating ```REST``` APIs containing GNSS and Signals data.
-* Enabling RBAC on the API endpoints using [Auth0](https://auth0.com/).
+* Enabling ```RBAC``` on the API endpoints using [Auth0](https://auth0.com/).
     - A role of ```GNSS Director``` can view GNSS and Signals, plus add, modify and delete GNSS and Signals.
     - A role of ```GNSS Client``` can view GNSS and Signals, but not add, modify or delete GNSS and Signals.
     - No role can only view GNSS (not view Signals).
@@ -35,10 +33,11 @@ This project summarizes the concepts learned from the various courses in the Ful
 ## Local Project Setup
 
 **Note: The instructions below are for a Windows 10 platform using Python 3.8.X.**
+**Note that python is deployed on Heroku as version 3.7**
 
 ### Python 3.7
 
-Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
+Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python).
 
 ### Python 3.8 Addendum
 
@@ -46,21 +45,21 @@ Install https://visualstudio.microsoft.com/visual-cpp-build-tools.
 
 ### Project Directory
 
-Create a folder on your PC to host the project files.  Navigate to the ```\backend``` folder (**TBD/TODO check path**) and open a command window ```(Windows Key + cmd.exe)``` at this location.
+Create a folder on your PC to host the project files.  Navigate to the root folder and open a command window ```(Windows Key + cmd.exe)``` at this location.
 
 ### Virtual Environment
 
-Create the virtual environment in hte \backend folder (**TBD/TODO check path**) by running the following command:
+Create the virtual environment in hte root folder by running the following command:
 
 ```
 python -m virtualenv env
 ```
 
-For Windows 10, this means going into the ```backend\env\Scripts``` folder and running ```activate.bat``` via command prompt.  Now this command prompt has ```(env)``` in it and is the virtual environment for this project, only containing the dependencies required for it (i.e. those from requirements.txt).
+For Windows 10, this means going into the ```env\Scripts``` folder(by using the cd command in cmd.exe) and running ```activate.bat``` via command prompt.  Now this command prompt has ```(env)``` in it and is the virtual environment for this project, only containing the dependencies required for it (i.e. those from requirements.txt).
 
 ### PIP Dependencies
 
-Once you have your virtual environment setup and running, install dependencies by navigating to the `/backend` directory and running:
+Once you have your virtual environment setup and running, install dependencies by navigating to the root directory in the command window (```cd..``` twice) and running:
 
 ```
 pip install -r requirements.txt
@@ -68,19 +67,20 @@ pip install -r requirements.txt
 
 This will install all of the required packages we selected within the `requirements.txt` file.
 
-Also based on the Python 3.8 Addendum, a small fix is required to work with Python 3.8:
+For Python 3.8 users only (not required for Heroku or Python 3.7): A small fix is required to work with Python 3.8:
 
-Go into ```backend\env\Lib\site-packages\sqlalchemy\util\compat.py``` and follow the instructions here: https://knowledge.udacity.com/questions/132762#132817
-
-Also update Werkzeug:
-
-```
-pip install --upgrade Werkzeug
-```
+Go into ```env\Lib\site-packages\sqlalchemy\util\compat.py``` and follow the instructions here: https://knowledge.udacity.com/questions/132762#132817, which is:
+* Comment out line 14 - "import time"
+* Comment out lines 330-333 - If else statements related to time_func
 
 ## Running the backend Flask server
 
-Navigate to the root folder of the project (where manage.py is located) (**TBD/TODO check path**) with the virtual environment activated (```(env)``` should appear in the command prompt).
+The development environment variables needs to be set as follows:
+* In ```app.py```, set ```dev``` to ```True```.
+* In ```models.py```, set ```dev``` to ```True```.
+* In ```auth.py```, set ```dev``` to ```True```.
+
+Navigate to the root folder of the project (where manage.py is located) with the virtual environment activated (```(env)``` should appear in the command prompt).
 
 To run the server, execute:
 
@@ -106,7 +106,7 @@ Note: The ```gnss``` database is for production, ```gnss_test``` is for testing 
 
 #### Create the gnss database tables schema
 
-Navigate to the ```backend\src\``` folder (**TBD/TODO check path**) with the virtual environment activated (```(env)``` should appear in the command prompt) and run the following commands to create the postgres db schema (no GNSS data will be populated yet):
+Navigate to the root with the virtual environment activated (```(env)``` should appear in the command prompt) and run the following commands to create the postgres db schema (no GNSS data will be populated yet):
 
 ```
 flask db init
@@ -115,7 +115,7 @@ flask db upgrade
 ```
 
 #### Populating the gnss database with initial data
-Navigate to the ```backend\src\database``` folder (**TBD/TODO check path**) with the virtual environment activated (```(env)``` should appear in the command prompt) and run the following:
+Navigate to the root folder with the virtual environment activated (```(env)``` should appear in the command prompt) and run the following:
 
 ```
 python populate_gnss.py
@@ -124,7 +124,9 @@ python populate_gnss.py
 <a name="heroku-deployment"></a>
 ## Heroku Deployment
 
-The app is located at: TBD
+The app is located at: https://gnss-api.herokuapp.com/
+
+See next 2 sections for logging in for different users/roles for testing.
 
 <a name="roles-and-api-access"></a>
 ## Roles and API Access
@@ -173,7 +175,7 @@ Available API endpoints:
     - key: ```"success"```, value: ```true``` or ```false``` ```(boolean)```
 
 ```
-curl -X GET http://127.0.0.1:5000/gnss
+curl -X GET https://gnss-api.herokuapp.com/gnss
 ```
 
 ```
@@ -211,7 +213,7 @@ curl -X GET http://127.0.0.1:5000/gnss
     - key: ```"success"```, value: ```true``` or ```false``` ```(boolean)```
 
 ```
-curl -X GET http://127.0.0.1:5000/gnss-signals --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4MDE4NjcsImV4cCI6MTYwNzg4ODI2NywiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.eBUOWs7MowemhFsXk2Zz9oFHtdjJKTzz1GZ55osOrDpQflnvOEcF551nI0qCfyYLekLXddMdJdPGk6FmLeaahLRZbvdmKb6vENxpuUZbae9ftwSt7OnQniskAdwebyobIPFILjG1b_hIFzU9VWk9gnO2ZWRVpp0x__EAKay08ix0S8KL2ct_sA5lH6W6xg23y91PJyfEe5XnFxLUb5QVso663HdPt3o57i7teMYgM25oJkmIblnUACCc5o4cmJJKE8pQg5YQxOZah4Na16f_RNEu0OuVVU2toyg0WQrVJErI1unkJLtij81iJvmHxZIFIUDO2cS8v8602lQl3eTTRQ"
+curl -X GET https://gnss-api.herokuapp.com/gnss-signals --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4OTQ5MzgsImV4cCI6MTYwNzk4MTMzOCwiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.z7b9-4rcI-0ultsQdVPS0exnoV3kH1mC-QV2FXrX0dQHOQrZesodIwNsrWaX6qk1s2sDpSEA9hSyXsKInVMCXwslHIk5yq2WkP2gROVVL1O--FOO2WxsDh7J2ig9Qhs_Np0pbJ7UgXPg9xDI-ylxTfxsU7cOgTyrGUc57176YdwFW4674NFIlXjjHZHT8ef7emts04yIl3Ud1nD_bNIwjFCcmDPOaz0KqAxDRNMu38YoXE19U3YQ0YaPxRsdMn3kZlBjKoi1sQCQvFSfOLBrlF5apTCw2Xnz3eWHdamIxVOjIFa5_aahl7tl-ACLFRx93494wYoTaQmC4CQR-NhWBA"
 ```
 
 ```
@@ -281,7 +283,7 @@ curl -X GET http://127.0.0.1:5000/gnss-signals --header "Authorization: Bearer e
     - key: ```"success"```, value: ```true``` or ```false``` ```(boolean)```
 
 ```
-curl -X POST http://127.0.0.1:5000/gnss --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4MDE4NjcsImV4cCI6MTYwNzg4ODI2NywiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.eBUOWs7MowemhFsXk2Zz9oFHtdjJKTzz1GZ55osOrDpQflnvOEcF551nI0qCfyYLekLXddMdJdPGk6FmLeaahLRZbvdmKb6vENxpuUZbae9ftwSt7OnQniskAdwebyobIPFILjG1b_hIFzU9VWk9gnO2ZWRVpp0x__EAKay08ix0S8KL2ct_sA5lH6W6xg23y91PJyfEe5XnFxLUb5QVso663HdPt3o57i7teMYgM25oJkmIblnUACCc5o4cmJJKE8pQg5YQxOZah4Na16f_RNEu0OuVVU2toyg0WQrVJErI1unkJLtij81iJvmHxZIFIUDO2cS8v8602lQl3eTTRQ" --header "Content-Type: application/json"  --data-raw "{'name': 'GLONASS', 'owner': 'Russia', 'num_satellites': 24, 'num_frequencies': 2}"
+curl -X POST https://gnss-api.herokuapp.com/gnss --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4OTQ5MzgsImV4cCI6MTYwNzk4MTMzOCwiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.z7b9-4rcI-0ultsQdVPS0exnoV3kH1mC-QV2FXrX0dQHOQrZesodIwNsrWaX6qk1s2sDpSEA9hSyXsKInVMCXwslHIk5yq2WkP2gROVVL1O--FOO2WxsDh7J2ig9Qhs_Np0pbJ7UgXPg9xDI-ylxTfxsU7cOgTyrGUc57176YdwFW4674NFIlXjjHZHT8ef7emts04yIl3Ud1nD_bNIwjFCcmDPOaz0KqAxDRNMu38YoXE19U3YQ0YaPxRsdMn3kZlBjKoi1sQCQvFSfOLBrlF5apTCw2Xnz3eWHdamIxVOjIFa5_aahl7tl-ACLFRx93494wYoTaQmC4CQR-NhWBA" --header "Content-Type: application/json"  --data "{\"name\": \"GLONASS\", \"owner\": \"Russia\", \"num_satellites\": 24, \"num_frequencies\": 2}"
 ```
 
 ```
@@ -312,7 +314,7 @@ curl -X POST http://127.0.0.1:5000/gnss --header "Authorization: Bearer eyJhbGci
     - key: ```"success"```, value: ```true``` or ```false``` ```(boolean)```
 
 ```
-curl -X POST http://127.0.0.1:5000/gnss-signals --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4MDE4NjcsImV4cCI6MTYwNzg4ODI2NywiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.eBUOWs7MowemhFsXk2Zz9oFHtdjJKTzz1GZ55osOrDpQflnvOEcF551nI0qCfyYLekLXddMdJdPGk6FmLeaahLRZbvdmKb6vENxpuUZbae9ftwSt7OnQniskAdwebyobIPFILjG1b_hIFzU9VWk9gnO2ZWRVpp0x__EAKay08ix0S8KL2ct_sA5lH6W6xg23y91PJyfEe5XnFxLUb5QVso663HdPt3o57i7teMYgM25oJkmIblnUACCc5o4cmJJKE8pQg5YQxOZah4Na16f_RNEu0OuVVU2toyg0WQrVJErI1unkJLtij81iJvmHxZIFIUDO2cS8v8602lQl3eTTRQ" --header "Content-Type: application/json"  --data-raw "{'signal': 'G1', 'gnss_id': 3}"
+curl -X POST https://gnss-api.herokuapp.com/gnss-signals --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4OTQ5MzgsImV4cCI6MTYwNzk4MTMzOCwiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.z7b9-4rcI-0ultsQdVPS0exnoV3kH1mC-QV2FXrX0dQHOQrZesodIwNsrWaX6qk1s2sDpSEA9hSyXsKInVMCXwslHIk5yq2WkP2gROVVL1O--FOO2WxsDh7J2ig9Qhs_Np0pbJ7UgXPg9xDI-ylxTfxsU7cOgTyrGUc57176YdwFW4674NFIlXjjHZHT8ef7emts04yIl3Ud1nD_bNIwjFCcmDPOaz0KqAxDRNMu38YoXE19U3YQ0YaPxRsdMn3kZlBjKoi1sQCQvFSfOLBrlF5apTCw2Xnz3eWHdamIxVOjIFa5_aahl7tl-ACLFRx93494wYoTaQmC4CQR-NhWBA" --header "Content-Type: application/json"  --data "{\"signal\": \"G1\", \"gnss_id\": 3}"
 ```
 
 ```
@@ -345,7 +347,7 @@ curl -X POST http://127.0.0.1:5000/gnss-signals --header "Authorization: Bearer 
 
 
 ```
-curl -X PATCH http://127.0.0.1:5000/gnss/1 --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4MDE4NjcsImV4cCI6MTYwNzg4ODI2NywiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.eBUOWs7MowemhFsXk2Zz9oFHtdjJKTzz1GZ55osOrDpQflnvOEcF551nI0qCfyYLekLXddMdJdPGk6FmLeaahLRZbvdmKb6vENxpuUZbae9ftwSt7OnQniskAdwebyobIPFILjG1b_hIFzU9VWk9gnO2ZWRVpp0x__EAKay08ix0S8KL2ct_sA5lH6W6xg23y91PJyfEe5XnFxLUb5QVso663HdPt3o57i7teMYgM25oJkmIblnUACCc5o4cmJJKE8pQg5YQxOZah4Na16f_RNEu0OuVVU2toyg0WQrVJErI1unkJLtij81iJvmHxZIFIUDO2cS8v8602lQl3eTTRQ" --header "Content-Type: application/json"  --data-raw "{'owner': 'America'}"
+curl -X PATCH https://gnss-api.herokuapp.com/gnss/1 --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4OTQ5MzgsImV4cCI6MTYwNzk4MTMzOCwiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.z7b9-4rcI-0ultsQdVPS0exnoV3kH1mC-QV2FXrX0dQHOQrZesodIwNsrWaX6qk1s2sDpSEA9hSyXsKInVMCXwslHIk5yq2WkP2gROVVL1O--FOO2WxsDh7J2ig9Qhs_Np0pbJ7UgXPg9xDI-ylxTfxsU7cOgTyrGUc57176YdwFW4674NFIlXjjHZHT8ef7emts04yIl3Ud1nD_bNIwjFCcmDPOaz0KqAxDRNMu38YoXE19U3YQ0YaPxRsdMn3kZlBjKoi1sQCQvFSfOLBrlF5apTCw2Xnz3eWHdamIxVOjIFa5_aahl7tl-ACLFRx93494wYoTaQmC4CQR-NhWBA" --header "Content-Type: application/json"  --data "{\"owner\": \"America\"}"
 ```
 
 ```
@@ -377,7 +379,7 @@ curl -X PATCH http://127.0.0.1:5000/gnss/1 --header "Authorization: Bearer eyJhb
     - key: ```"success"```, value: ```true``` or ```false``` ```(boolean)```
 
 ```
-curl -X PATCH http://127.0.0.1:5000/gnss-signals/1 --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4MDE4NjcsImV4cCI6MTYwNzg4ODI2NywiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.eBUOWs7MowemhFsXk2Zz9oFHtdjJKTzz1GZ55osOrDpQflnvOEcF551nI0qCfyYLekLXddMdJdPGk6FmLeaahLRZbvdmKb6vENxpuUZbae9ftwSt7OnQniskAdwebyobIPFILjG1b_hIFzU9VWk9gnO2ZWRVpp0x__EAKay08ix0S8KL2ct_sA5lH6W6xg23y91PJyfEe5XnFxLUb5QVso663HdPt3o57i7teMYgM25oJkmIblnUACCc5o4cmJJKE8pQg5YQxOZah4Na16f_RNEu0OuVVU2toyg0WQrVJErI1unkJLtij81iJvmHxZIFIUDO2cS8v8602lQl3eTTRQ" --header "Content-Type: application/json"  --data-raw "{'signal': 'F1'}"
+curl -X PATCH https://gnss-api.herokuapp.com/gnss-signals/1 --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4OTQ5MzgsImV4cCI6MTYwNzk4MTMzOCwiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.z7b9-4rcI-0ultsQdVPS0exnoV3kH1mC-QV2FXrX0dQHOQrZesodIwNsrWaX6qk1s2sDpSEA9hSyXsKInVMCXwslHIk5yq2WkP2gROVVL1O--FOO2WxsDh7J2ig9Qhs_Np0pbJ7UgXPg9xDI-ylxTfxsU7cOgTyrGUc57176YdwFW4674NFIlXjjHZHT8ef7emts04yIl3Ud1nD_bNIwjFCcmDPOaz0KqAxDRNMu38YoXE19U3YQ0YaPxRsdMn3kZlBjKoi1sQCQvFSfOLBrlF5apTCw2Xnz3eWHdamIxVOjIFa5_aahl7tl-ACLFRx93494wYoTaQmC4CQR-NhWBA" --header "Content-Type: application/json"  --data "{\"signal\": \"F1\"}"
 ```
 
 ```
@@ -404,7 +406,7 @@ curl -X PATCH http://127.0.0.1:5000/gnss-signals/1 --header "Authorization: Bear
     - key: ```"success"```, value: ```true``` or ```false``` ```(boolean)```
 
 ```
-curl -X DELETE http://127.0.0.1:5000/gnss/1 --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4MDE4NjcsImV4cCI6MTYwNzg4ODI2NywiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.eBUOWs7MowemhFsXk2Zz9oFHtdjJKTzz1GZ55osOrDpQflnvOEcF551nI0qCfyYLekLXddMdJdPGk6FmLeaahLRZbvdmKb6vENxpuUZbae9ftwSt7OnQniskAdwebyobIPFILjG1b_hIFzU9VWk9gnO2ZWRVpp0x__EAKay08ix0S8KL2ct_sA5lH6W6xg23y91PJyfEe5XnFxLUb5QVso663HdPt3o57i7teMYgM25oJkmIblnUACCc5o4cmJJKE8pQg5YQxOZah4Na16f_RNEu0OuVVU2toyg0WQrVJErI1unkJLtij81iJvmHxZIFIUDO2cS8v8602lQl3eTTRQ"
+curl -X DELETE https://gnss-api.herokuapp.com/gnss/1 --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4OTQ5MzgsImV4cCI6MTYwNzk4MTMzOCwiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.z7b9-4rcI-0ultsQdVPS0exnoV3kH1mC-QV2FXrX0dQHOQrZesodIwNsrWaX6qk1s2sDpSEA9hSyXsKInVMCXwslHIk5yq2WkP2gROVVL1O--FOO2WxsDh7J2ig9Qhs_Np0pbJ7UgXPg9xDI-ylxTfxsU7cOgTyrGUc57176YdwFW4674NFIlXjjHZHT8ef7emts04yIl3Ud1nD_bNIwjFCcmDPOaz0KqAxDRNMu38YoXE19U3YQ0YaPxRsdMn3kZlBjKoi1sQCQvFSfOLBrlF5apTCw2Xnz3eWHdamIxVOjIFa5_aahl7tl-ACLFRx93494wYoTaQmC4CQR-NhWBA"
 ```
 
 ```
@@ -425,7 +427,7 @@ curl -X DELETE http://127.0.0.1:5000/gnss/1 --header "Authorization: Bearer eyJh
     - key: ```"success"```, value: ```true``` or ```false``` ```(boolean)```
 
 ```
-curl -X DELETE http://127.0.0.1:5000/gnss-signals/1 --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4MDE4NjcsImV4cCI6MTYwNzg4ODI2NywiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.eBUOWs7MowemhFsXk2Zz9oFHtdjJKTzz1GZ55osOrDpQflnvOEcF551nI0qCfyYLekLXddMdJdPGk6FmLeaahLRZbvdmKb6vENxpuUZbae9ftwSt7OnQniskAdwebyobIPFILjG1b_hIFzU9VWk9gnO2ZWRVpp0x__EAKay08ix0S8KL2ct_sA5lH6W6xg23y91PJyfEe5XnFxLUb5QVso663HdPt3o57i7teMYgM25oJkmIblnUACCc5o4cmJJKE8pQg5YQxOZah4Na16f_RNEu0OuVVU2toyg0WQrVJErI1unkJLtij81iJvmHxZIFIUDO2cS8v8602lQl3eTTRQ"
+curl -X DELETE https://gnss-api.herokuapp.com/gnss-signals/1 --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ikh5VC1aRk1qdkVoaTNRVUJMLW44QiJ9.eyJpc3MiOiJodHRwczovL2NiaHViZXIudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmZDUwZDhhYjI3ZDhhMDA2OGE5MTAzNCIsImF1ZCI6Imduc3MiLCJpYXQiOjE2MDc4OTQ5MzgsImV4cCI6MTYwNzk4MTMzOCwiYXpwIjoibkhaWllLMXJ2RTVBSG81dHdjTGd2dXNoSDl2YnhpQTAiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpnbnNzIiwiZGVsZXRlOnNpZ25hbCIsImdldDpzaWduYWxzIiwicGF0Y2g6Z25zcyIsInBhdGNoOnNpZ25hbCIsInBvc3Q6Z25zcyIsInBvc3Q6c2lnbmFsIl19.z7b9-4rcI-0ultsQdVPS0exnoV3kH1mC-QV2FXrX0dQHOQrZesodIwNsrWaX6qk1s2sDpSEA9hSyXsKInVMCXwslHIk5yq2WkP2gROVVL1O--FOO2WxsDh7J2ig9Qhs_Np0pbJ7UgXPg9xDI-ylxTfxsU7cOgTyrGUc57176YdwFW4674NFIlXjjHZHT8ef7emts04yIl3Ud1nD_bNIwjFCcmDPOaz0KqAxDRNMu38YoXE19U3YQ0YaPxRsdMn3kZlBjKoi1sQCQvFSfOLBrlF5apTCw2Xnz3eWHdamIxVOjIFa5_aahl7tl-ACLFRx93494wYoTaQmC4CQR-NhWBA"
 ```
 
 ```
@@ -455,18 +457,14 @@ Example:
 <a name="testing"></a>
 ## Testing
 
-**TBD/TODO - perhaps the JWTs can be stored in env variables**
-
 The following steps allow unit testing of the end points with the local build:
 
-1. Start the local flask server by navigating to the root directory of the project (where manage.py is located):
+1. Go to the app at https://gnss-api.herokuapp.com/ and log in using the [testing accounts](#testing-accounts).
 
-```python manage.py runserver```
+2. Capture the JWT after logging in (will be on the post log-in page or in the URL under access_token).
 
-2. Go to http://127.0.0.1:5000/ and log in using the [testing accounts](#testing-accounts).  Log out when capturing the JWT (return to the home page and log out).
+3. Log out when capturing the JWT (return to the home page and log out).
 
-3. Capture the JWT after logging in (will be on the post-log in page or in the URL under access_token).
+4. In ```test_gnssapi.py```, in the ```setUp``` method, paste the JWTs for the client and director in the ```self.client_bearer_token``` and ```self.director_bearer_token``` variables.
 
-4. In ```test_gnssapi.py```, in the ```setUp``` method, paste the JWTs for the client and director.
-
-5. Open a command window in the ```backend\src``` folder (**TBD/TODO: folder may change**) and run the ```python test_gnssapi.py```.  Test results will be reported as OK if all tests pass.
+5. Open a command window in the root folder (where test_gnssapi.py is located) and run ```python test_gnssapi.py```.  Test results will be reported as OK if all tests pass.
