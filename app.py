@@ -23,8 +23,14 @@ def create_app(test_config=None):
 
     if dev:
         app.secret_key = 'abcdef'
+        CLIENT_ID = 'nHZZYK1rvE5AHo5twcLgvushH9vbxiA0'
+        AUTH0_BASE_URL = 'https://cbhuber.us.auth0.com'
+        IDENTIFIER = 'gnss'
     else:
         app.secret_key = os.environ['APP_SECRET_KEY']
+        CLIENT_ID = os.environ['CLIENT_ID']
+        AUTH0_BASE_URL = 'https://' + os.environ['AUTH0_DOMAIN']
+        IDENTIFIER = os.environ['IDENTIFIER']
 
     setup_db(app)
     CORS(app)
