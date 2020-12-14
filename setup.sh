@@ -1,0 +1,6 @@
+export ALGORITHMS = 'RS256'
+export API_AUDIENCE = 'gnss'
+export APP_SECRET_KEY = 'geomatics'
+export AUTH0_DOMAIN = 'cbhuber.us.auth0.com'
+export CLIENT_ID = 'nHZZYK1rvE5AHo5twcLgvushH9vbxiA0'
+export DATABASE_URL = 'postgres://odhblchjaneuyp:545b51cccee120fd95768e81f126738bcce19df40dd060398c44aa12402272a3@ec2-34-237-236-32.compute-1.amazonaws.com:5432/df24o4cv57trer'
