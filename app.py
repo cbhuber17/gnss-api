@@ -15,10 +15,6 @@ dev = False
 
 def create_app(test_config=None):
 
-    CLIENT_ID = 'nHZZYK1rvE5AHo5twcLgvushH9vbxiA0'
-    AUTH0_BASE_URL = 'https://cbhuber.us.auth0.com'
-    IDENTIFIER = 'gnss'
-
     app = Flask(__name__)
 
     if dev:
@@ -30,7 +26,7 @@ def create_app(test_config=None):
         app.secret_key = os.environ['APP_SECRET_KEY']
         CLIENT_ID = os.environ['CLIENT_ID']
         AUTH0_BASE_URL = 'https://' + os.environ['AUTH0_DOMAIN']
-        IDENTIFIER = os.environ['IDENTIFIER']
+        IDENTIFIER = os.environ['API_AUDIENCE']
 
     setup_db(app)
     CORS(app)
