@@ -99,14 +99,13 @@ Go into ```env\Lib\site-packages\sqlalchemy\util\compat.py``` and follow the ins
 
 ## Running the backend Flask server
 
-The development environment variables needs to be set as follows:
-* In ```app.py```, set ```dev``` to ```True```.
-* In ```models.py```, set ```dev``` to ```True```.
-* In ```auth.py```, set ```dev``` to ```True```.
-
 Navigate to the root folder of the project (where manage.py is located) with the virtual environment activated (```(env)``` should appear in the command prompt).
 
-To run the server, execute:
+To run the server, first execute:
+
+```run source setup.sh``` (Mac)
+
+to store the local environment variables.
 
 ```python3 manage.py runserver```
 
