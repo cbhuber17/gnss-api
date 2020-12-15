@@ -51,23 +51,35 @@ class Gnss(db.Model):
     signals = db.relationship('Signal', backref='gnss', lazy=True)
 
     def insert(self):
+        '''Inserts the new row into the db.'''
+
         db.session.add(self)
         db.session.commit()
 
     def update(self):
+        '''Updates the db via committing the session.'''
+
         db.session.commit()
 
     def delete(self):
+        '''Deletes the row from the db.'''
+
         db.session.delete(self)
         db.session.commit()
 
     def cancel(self):
+        '''Cancels/rollback the current db session.'''
+
         db.session.rollback()
 
     def close(self):
+        '''Closes the db connection.'''
+
         db.session.close()
 
     def format(self):
+        '''Formats the attributes for the API.'''
+
         return {
             'id': self.id,
             'name': self.name,
@@ -87,23 +99,35 @@ class Signal(db.Model):
     gnss_id = Column(db.Integer, db.ForeignKey('gnss.id'))
 
     def insert(self):
+        '''Inserts the new row into the db.'''
+
         db.session.add(self)
         db.session.commit()
 
     def update(self):
+        '''Updates the db via committing the session.'''
+
         db.session.commit()
 
     def delete(self):
+        '''Deletes the row from the db.'''
+
         db.session.delete(self)
         db.session.commit()
 
     def cancel(self):
+        '''Cancels/rollback the current db session.'''
+
         db.session.rollback()
 
     def close(self):
+        '''Closes the db connection.'''
+
         db.session.close()
 
     def format(self):
+        '''Formats the attributes for the API.'''
+
         return {
             'id': self.id,
             'signal': self.signal,

@@ -1,4 +1,13 @@
-from flask import Flask, request, jsonify, abort, render_template, redirect, url_for, session
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    abort,
+    render_template,
+    redirect,
+    url_for,
+    session)
+
 import json
 from flask_cors import CORS
 
@@ -10,25 +19,23 @@ from six.moves.urllib.parse import urlencode
 import os
 import sys
 
-dev = False
-
 
 def create_app(test_config=None):
+    ''' Function provides the all endpoints required
+    by the flask app (including RBAC for each endpoint)
+    and returns the app to be run on a WSGI platform.'''
 
     app = Flask(__name__)
 
-    if dev:
-        app.secret_key = 'abcdef'
-        CLIENT_ID = 'nHZZYK1rvE5AHo5twcLgvushH9vbxiA0'
-        AUTH0_BASE_URL = 'https://cbhuber.us.auth0.com'
-        IDENTIFIER = 'gnss'
-    else:
-        app.secret_key = os.environ['APP_SECRET_KEY']
-        CLIENT_ID = os.environ['CLIENT_ID']
-        AUTH0_BASE_URL = 'https://' + os.environ['AUTH0_DOMAIN']
-        IDENTIFIER = os.environ['API_AUDIENCE']
+    app.secret_key = os.environ['APP_SECRET_KEY']
+    CLIENT_ID = os.environ['CLIENT_ID']
+    AUTH0_BASE_URL = 'https://' + os.environ['AUTH0_DOMAIN']
+    IDENTIFIER = os.environ['API_AUDIENCE']
 
     setup_db(app)
+
+    # Note: Use caution when using CORS:
+    # https://www.pivotpointsecurity.com/blog/cross-origin-resource-sharing-security/
     CORS(app)
 
     # -----------------------------------------------------------------------------------------------------------
@@ -36,6 +43,7 @@ def create_app(test_config=None):
     @app.after_request
     # After a request is received, run this after_request method
     def after_request(response):
+        '''Defines response headers after every HTML request.'''
 
         response.headers.add('Access-Control-Allow-Headers',
                              'Content-Type, Authorization')
@@ -66,7 +74,10 @@ def create_app(test_config=None):
         if request.method != 'GET':
             abort(405)
 
-        return redirect(f'{AUTH0_BASE_URL}/authorize?audience={IDENTIFIER}&response_type=token&client_id={CLIENT_ID}&redirect_uri=' + url_for('loggedin', _external=True))
+        return redirect(f'{AUTH0_BASE_URL}/authorize?audience={IDENTIFIER}' +
+                        f'&response_type=token&client_id={CLIENT_ID}' +
+                        f'&redirect_uri=' +
+                        url_for('loggedin', _external=True))
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -175,11 +186,12 @@ def create_app(test_config=None):
             new_gnss = Gnss(**gnss_data)
             new_gnss.insert()
 
-        except:
+        except SQLAlchemyError as e:
             error = True
             new_gnss.cancel()
             new_gnss.close()
             print(sys.exc_info())
+            print(e)
 
         if error:
             abort(422)
@@ -208,17 +220,19 @@ def create_app(test_config=None):
             new_gnss_signal = Signal(**gnss_signal_data)
             new_gnss_signal.insert()
 
-        except:
+        except SQLAlchemyError as e:
             error = True
             new_gnss_signal.cancel()
             new_gnss_signal.close()
             print(sys.exc_info())
+            print(e)
 
         if error:
             abort(422)
 
         else:
-            return jsonify({'success': True, 'signal': [new_gnss_signal.format()]})
+            return jsonify({'success': True,
+                            'signal': [new_gnss_signal.format()]})
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -256,11 +270,12 @@ def create_app(test_config=None):
             if 'num_frequencies' in gnss_data:
                 gnss_from_db.num_frequencies = gnss_data['num_frequencies']
 
-        except:
+        except SQLAlchemyError as e:
             error = True
             gnss_from_db.cancel()
             gnss_from_db.close()
             print(sys.exc_info())
+            print(e)
 
         if error:
             abort(422)
@@ -298,17 +313,19 @@ def create_app(test_config=None):
             if 'gnss_id' in signal_data:
                 gnss_signal_from_db.gnss_id = signal_data['gnss_id']
 
-        except:
+        except SQLAlchemyError as e:
             error = True
             gnss_from_db.cancel()
             gnss_from_db.close()
             print(sys.exc_info())
+            print(e)
 
         if error:
             abort(422)
 
         else:
-            return jsonify({'success': True, 'signal': [gnss_signal_from_db.format()]})
+            return jsonify({'success': True,
+                            'signal': [gnss_signal_from_db.format()]})
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -329,11 +346,12 @@ def create_app(test_config=None):
             try:
                 gnss_to_delete.delete()
 
-            except:
+            except SQLAlchemyError as e:
                 error = True
                 gnss_to_delete.cancel()
                 gnss_to_delete.close()
                 print(sys.exc_info())
+                print(e)
 
             if error:
                 abort(422)
@@ -362,11 +380,12 @@ def create_app(test_config=None):
             try:
                 gnss_signal_to_delete.delete()
 
-            except:
+            except SQLAlchemyError as e:
                 error = True
                 gnss_signal_to_delete.cancel()
                 gnss_signal_to_delete.close()
                 print(sys.exc_info())
+                print(e)
 
             if error:
                 abort(422)
@@ -384,27 +403,51 @@ def create_app(test_config=None):
 
     @app.errorhandler(400)
     def bad_request(error):
-        return jsonify({'success': False, 'error': 400, 'message': 'Bad request'}), 400
+        '''Provides the response for a 400 error.'''
+
+        return jsonify({'success': False,
+                        'error': 400,
+                        'message': 'Bad request'}), 400
 
     @app.errorhandler(404)
     def not_found(error):
-        return jsonify({'success': False, 'error': 404, 'message': 'Not found'}), 404
+        '''Provides the response for a 404 error.'''
+
+        return jsonify({'success': False,
+                        'error': 404,
+                        'message': 'Not found'}), 404
 
     @app.errorhandler(405)
     def method_not_allowed(error):
-        return jsonify({'success': False, 'error': 405, 'message': 'Method not allowed'}), 405
+        '''Provides the response for a 405 error.'''
+
+        return jsonify({'success': False,
+                        'error': 405,
+                        'message': 'Method not allowed'}), 405
 
     @app.errorhandler(422)
     def unprocessable(error):
-        return jsonify({'success': False, 'error': 422, 'message': 'Not processable'}), 422
+        '''Provides the response for a 422 error.'''
+
+        return jsonify({'success': False,
+                        'error': 422,
+                        'message': 'Not processable'}), 422
 
     @app.errorhandler(500)
     def internal_server_error(error):
-        return jsonify({'success': False, 'error': 500, 'message': 'Internal server error'}), 500
+        '''Provides the response for a 500 error.'''
+
+        return jsonify({'success': False,
+                        'error': 500,
+                        'message': 'Internal server error'}), 500
 
     @app.errorhandler(AuthError)
-    def auth_error(error):
-        return jsonify({'success': False, 'error': error.status_code, 'message': error.error['description']}), error.status_code
+    def auth_error(e):
+        '''Provides the response for an authentication error.'''
+
+        return jsonify({'success': False,
+                        'error': e.status_code,
+                        'message': e.error['description']}), e.status_code
 
     # -----------------------------------------------------------------------------------------------------------
 

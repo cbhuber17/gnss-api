@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-1. [Background Information](#background-info)
+1. [Background Information & Motivation](#background-info)
 2. [Local Setup](#local-setup)
 3. [Heroku Deployment](#heroku-deployment)
 3. [Roles and API Access](#roles-and-api-access)
@@ -16,18 +16,38 @@ This project provides a ```RESTful``` and ```RBAC``` based ```API``` to provide 
 * Information about each GNSS, such as owner and number of satellites
 * Information on signals names for a specific GNSS
 
+The motivation for this project is to provide access to GNSS data to those in the satellite navigation industry whilst practicing the skills gained from this Full Stack nanodegree program.
+
 ### Strategies and Techniques Implemented
 
 This project summarizes the concepts learned from the various courses in the Full Stack Nanodegree program: 
 
 * Utilizing a database with models based on the [Postgres](https://www.postgresql.org/) client.  
     - The ```ORM``` used is python's ```SQLAlchemy``` (combined with ```Flask```) that contains ```CRUD``` operations.
+    - See more information on the data modeling schema in the [Data Modeling](#data-modeling) section below.
 * Generating ```REST``` APIs containing GNSS and Signals data.
 * Enabling ```RBAC``` on the API endpoints using [Auth0](https://auth0.com/).
     - A role of ```GNSS Director``` can view GNSS and Signals, plus add, modify and delete GNSS and Signals.
     - A role of ```GNSS Client``` can view GNSS and Signals, but not add, modify or delete GNSS and Signals.
     - No role can only view GNSS (not view Signals).
 * Deploying the project on [Heroku](https://www.heroku.com/).
+
+<a name="data-modeling"></a>
+#### Data Modeling
+
+Data modeling is done in models.py, where:
+
+* 2 tables are created: Gnss and Signals
+* The Gnss table can be viewed by any user, but can only be changed by the director user
+* The Signals table can be viewed by the client and director users (not the normal user), but can only be changed by the director user
+
+Each table has helper functions:
+* insert() to insert a new row into the table.
+* update() to commit the session to the table.
+* delete() to delete a row from the table.
+* cancel() to cancel/rollback the current session.
+* close() to close the db connection.
+* format() to format the attributes of the table for the API JSON format.
 
 <a name="local-setup"></a>
 ## Local Project Setup
@@ -52,8 +72,10 @@ Create a folder on your PC to host the project files.  Navigate to the root fold
 Create the virtual environment in hte root folder by running the following command:
 
 ```
-python -m virtualenv env
+python3 -m virtualenv env
 ```
+
+Note: For Windows users, ```python3``` can be ```python```.
 
 For Windows 10, this means going into the ```env\Scripts``` folder(by using the cd command in cmd.exe) and running ```activate.bat``` via command prompt.  Now this command prompt has ```(env)``` in it and is the virtual environment for this project, only containing the dependencies required for it (i.e. those from requirements.txt).
 
@@ -62,8 +84,10 @@ For Windows 10, this means going into the ```env\Scripts``` folder(by using the 
 Once you have your virtual environment setup and running, install dependencies by navigating to the root directory in the command window (```cd..``` twice) and running:
 
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
+
+Note: For Windows users, ```pip3``` can be ```pip```.
 
 This will install all of the required packages we selected within the `requirements.txt` file.
 
@@ -84,7 +108,9 @@ Navigate to the root folder of the project (where manage.py is located) with the
 
 To run the server, execute:
 
-```python manage.py runserver```
+```python3 manage.py runserver```
+
+Note: For Windows users, ```python3``` can be ```python```.
 
 The server will start at [http://127.0.0.1:5000/](http://127.0.0.1:5000/)
 
@@ -118,8 +144,10 @@ flask db upgrade
 Navigate to the root folder with the virtual environment activated (```(env)``` should appear in the command prompt) and run the following:
 
 ```
-python populate_gnss.py
+python3 populate_gnss.py
 ```
+
+Note: For Windows users, ```python3``` can be ```python```.
 
 <a name="heroku-deployment"></a>
 ## Heroku Deployment
@@ -467,4 +495,6 @@ The following steps allow unit testing of the end points with the local build:
 
 4. In ```test_gnssapi.py```, in the ```setUp``` method, paste the JWTs for the client and director in the ```self.client_bearer_token``` and ```self.director_bearer_token``` variables.
 
-5. Open a command window in the root folder (where test_gnssapi.py is located) and run ```python test_gnssapi.py```.  Test results will be reported as OK if all tests pass.
+5. Open a command window in the root folder (where test_gnssapi.py is located) and run ```python3 test_gnssapi.py```.  Test results will be reported as OK if all tests pass.
+
+Note: For Windows users, ```python3``` can be ```python```.
